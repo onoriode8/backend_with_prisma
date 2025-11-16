@@ -9,6 +9,7 @@ app.use(express.json())
 
 app.use("/user", userRoutes);
 
+
 app.use((req: Request, res: Response, next: NextFunction) => {
     return res.status(400).json("Page not found.");
 });
