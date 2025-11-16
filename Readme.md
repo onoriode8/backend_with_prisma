@@ -3,7 +3,7 @@
 
 ### 1. INSTALL DEPENDENCIES
 ##### . npm install prisma --save-dev
-##### . npm install @prisma/client
+##### . npm install @prisma/client => This helps to preform CRUD operations and also integrate, query from your db with nodejs.
 
 ### 2. CREATE PRISMA.CONFIG.TS FILE, .ENV FILE AND PRISMA/SCHEMA.PRISMA FILE
 ##### . npx prisma init 
