@@ -1,30 +1,54 @@
+import bcryptjs from 'bcryptjs'
 import { RequestHandler } from 'express'
 
 import prisma from '../config/prisma'
+import { CreateUserInput } from '../schema/auth/create.user.schema'
+import { LoginUserInput } from '../schema/auth/login.user.schema'
 
 
-export const createUser: RequestHandler = async(req, res) => {
-    const name = req.body.name as string
-    const email = req.body.email as string
-    const username = req.body.username as string
 
+// create new users.
+export const createUser: RequestHandler<{}, {}, CreateUserInput> = async(req, res) => {
+    const name = req.body.name
+    const email = req.body.email
+    const username = req.body.username
+    const password = req.body.password
+
+    let existingEmail
     try {
-        const existingEmail = await prisma.user.findUnique({
-            where: { username }
+        existingEmail = await prisma.user.findUnique({
+            where: { email }
         });
         
         if(existingEmail) {
             return res.status(409).json("User already exist.")
         }
-
-        const user = await prisma.user.create({
-            data: { name, email, username }
-        })
-        
-        return res.status(201).json(user)
     } catch(err: any) {
         return res.status(500).json("Something went wrong")
     }
+
+    let hashedPassword;
+    try {
+        hashedPassword = await bcryptjs.hash(password, 12);
+    } catch (error) {
+        return res.status(500).json("Something went wrong")
+    }
+
+    try {
+        const user = await prisma.user.create({
+            data: { name, email, username, password: hashedPassword }
+        })
+        return res.status(201).json(user)
+    } catch (error) {
+        return res.status(500).json("Something went wrong")
+    }
+}
+
+export const LoginUser: RequestHandler<{}, {}, LoginUserInput> = (req, res) => {
+    const userData = req.body.userData
+    const password = req.body.password
+    return res.json(req.body)
+
 }
 
 export const queryUser: RequestHandler = async(req, res) => {
