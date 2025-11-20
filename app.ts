@@ -16,5 +16,5 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 
 app.listen(3000, () => {
-    console.log(`app is launch on http:localhost://3000`);
+    console.log(`app is launch on http://localhost:3000`);
 });
