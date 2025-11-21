@@ -38,17 +38,44 @@ export const createUser: RequestHandler<{}, {}, CreateUserInput> = async(req, re
         const user = await prisma.user.create({
             data: { name, email, username, password: hashedPassword }
         })
+        user.password = "";
         return res.status(201).json(user)
     } catch (error) {
         return res.status(500).json("Something went wrong")
     }
 }
 
-export const LoginUser: RequestHandler<{}, {}, LoginUserInput> = (req, res) => {
+
+export const LoginUser: RequestHandler<{}, {}, LoginUserInput> = async (req, res) => {
     const userData = req.body.userData
     const password = req.body.password
-    return res.json(req.body)
+    
+    let existingUser
+    try {
+        const [existingEmail, existingUsername] = await Promise.all([
+            prisma.user.findUnique({
+                where: { email: userData }
+            }),
+            prisma.user.findUnique({
+                where: { username: userData }
+            })
+        ])
+        if(!existingEmail && !existingUsername) {
+            return res.status(404).json("User not found. Create an account instead.")
+        }
+        existingUser = existingEmail ? existingEmail : existingUsername
+    } catch(err) {
+        return res.status(500).json("Something went wrong.")
+    }
 
+    try {
+        const isValid = await bcryptjs.compare(password, existingUser?.password as string)
+        if(!isValid) return res.status(422).json("Invalid credential entered.");
+        // existingUser.password = ""
+        return res.status(200).json({ user: existingUser })
+    } catch(err) {
+        return res.status(500).json("Something went wrong.")
+    }
 }
 
 export const queryUser: RequestHandler = async(req, res) => {
