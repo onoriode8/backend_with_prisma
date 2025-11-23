@@ -19,6 +19,7 @@ const AuthMiddleware: RequestHandler = (req, res, next) => {
             id: 123,
             name: "PrismaPractice"
         }
+        console.log("AUTH-MIDDLEWARE")
         next()
     } catch(err: any) {
         console.error(err.message)
