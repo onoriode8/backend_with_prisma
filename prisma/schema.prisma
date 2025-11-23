@@ -20,5 +20,13 @@ model User {
   email     String  @unique
   username  String  @unique
   password  String
-  // posts     []
+  posts     Posts[]
+}
+
+model Posts {
+  id          Int     @unique @id   @default(autoincrement())
+  title       String
+  creatorId   Int
+  description String
+  creator     User    @relation(fields: [creatorId], references: [id])
 }
