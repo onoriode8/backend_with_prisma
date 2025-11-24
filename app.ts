@@ -1,3 +1,4 @@
+import cors from "cors"
 import express, { Request, Response, NextFunction } from 'express'
 
 import userRoutes from './src/routes/user-route'
@@ -6,6 +7,9 @@ import userRoutes from './src/routes/user-route'
 const app = express()
 
 app.use(express.json())
+app.use(cors({
+    origin: '*', // add frontend url later
+}))
 
 app.use("/user", userRoutes);
 
