@@ -19,13 +19,13 @@ import { UpdateSingleUserPostParamSchema, UpdateSingleUserPostBodySchema } from 
 const router = Router();
 
 
-router.post("/create/user", Validation(CreateUserSchema), createUser);
+router.post("/create/account/user", Validation(CreateUserSchema), createUser);
 
 router.post("/login/user", Validation(LoginUserSchema), LoginUser);
 
-router.get("/query/:userId", Validation(GetAllUserSchema), AuthMiddleware, queryAllUser); 
+router.get("/query/:userId", Validation(GetAllUserSchema), AuthMiddleware, queryAllUser); // not added to client request
 
-router.get("/query/user/:id", Validation(GetUserSchema), getSingleUser);
+router.get("/query/user/:id", Validation(GetUserSchema), getSingleUser); // not added to client request
 
 // POST ROUTES BELOW
 router.post("/create/posts/:userId", 
