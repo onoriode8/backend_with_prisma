@@ -58,6 +58,43 @@ export const createProduct: RequestHandler<CreateProductParamsType, {},  CreateP
 }
 
 
-export const queryUserProductById: RequestHandler<{}, {}, {}, {}> = async (req, res) => {
+export const queryUserProductById: RequestHandler<CreateProductParamsType, {}, {}, {}> = async (req, res) => {
+    const userParams = req.params.userId
+    const paramsUserId = Number(userParams)
+    
+    if(paramsUserId !== req.userData?.userId) {
+        return res.status(401).json("Access Denied.")
+    }
 
+    try {
+        const user = await prisma.user.findUnique({
+            where: { id: req.userData?.userId }
+        });
+
+        if(!user) {
+            return res.status(404).json("User not found.")
+        }
+
+        const products = await prisma.products.findMany({
+            where: { creatorId: user.id },
+            include: {
+                creator: {
+                    select: {
+                        id: true, 
+                        name: true,
+                        email: true, 
+                        username: true
+                    }
+                }
+            }
+        })
+
+        if(!products) {
+            return res.status(400).json("Products not found.")
+        }
+
+        res.status(200).json(products)
+    } catch(err) {
+        return res.status(500).json("Something went wrong")
+    }
 }
