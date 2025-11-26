@@ -14,7 +14,7 @@ const AuthMiddleware: RequestHandler = async (req, res, next) => {
         if(!decodedToken) {
             return res.status(400).json("Token not provided.")
         }
-        const user = await prisma.user.findFirst({
+        const user = await prisma.user.findUnique({
             where: { id: decodedToken.userId }
         });
 
