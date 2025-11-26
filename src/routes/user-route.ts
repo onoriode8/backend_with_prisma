@@ -10,9 +10,9 @@ import Validation from '../middleware/zod.validation/zod.validation.middleware'
 import { createUser, LoginUser } from '../controller/user/auth/auth.user-controller'
 import { GetSingleUserPostSchema } from '../schema/post.schema/get.single.user.post.schema'
 import { queryAllUser, getSingleUser } from '../controller/user/get.user/get.user-controller'
+import { createProduct, queryUserProductById } from '../controller/products/product-controller'
 import { DeleteSingleUserPostSchema } from '../schema/post.schema/delete.single.user.post.schema'
 import { CreatePostBodySchema, CreatePostParamsSchema } from '../schema/post.schema/create.post.schema';
-import { createProduct, } from '../controller/products/product-controller'
 import { CreateProductParamsSchema, CreateProductBodySchema } from '../schema/product/create.product.schema'
 import { createPosts, GetSingleUserPosts, updateSingleUserPost, deleteSingleUserPost } from '../controller/post/post-controller';
 import { UpdateSingleUserPostParamSchema, UpdateSingleUserPostBodySchema } from '../schema/post.schema/update.single.user.post.schema'
@@ -45,8 +45,10 @@ router.delete("/posts/delete/:userId/:postId",
 
 //PRODUCT ROUTES BELOW
 router.post("/create/product/:userId", Validation(CreateProductParamsSchema), 
-    Validation(CreateProductBodySchema), AuthMiddleware, RoleBaseAuthorize(["User"]), createProduct);
+    Validation(CreateProductBodySchema), AuthMiddleware, RoleBaseAuthorize(["User"]), createProduct); // not added to client
 
+router.get("/query/user/product/:userId", 
+    Validation(CreatePostParamsSchema), AuthMiddleware, RoleBaseAuthorize(["User"]), queryUserProductById); // not added to client
 
-
+    
 export default router;
