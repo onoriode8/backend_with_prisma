@@ -14,19 +14,36 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  User
+  Admin
+  Member
+}
+
 model User {
-  id        Int     @id  @default(autoincrement())
+  id        Int         @id  @default(autoincrement())
+  role      Role        @default(User)
   name      String
-  email     String  @unique
-  username  String  @unique
+  email     String      @unique
+  username  String      @unique
   password  String
   posts     Posts[]
+  products  Products[]  
 }
 
 model Posts {
-  id          Int     @unique @id   @default(autoincrement())
+  id          Int       @unique @id   @default(autoincrement())
   title       String
   creatorId   Int
   description String
-  creator     User    @relation(fields: [creatorId], references: [id])
+  creator     User      @relation(fields: [creatorId], references: [id])
+}
+
+model Products {
+  orderId     Int       @id @default(autoincrement())
+  price       Int
+  quantity    Int
+  productName String
+  creatorId   Int
+  creator     User      @relation(fields: [creatorId], references: [id])
 }
