@@ -1,4 +1,5 @@
 import bcryptjs from 'bcryptjs'
+import jwt from 'jsonwebtoken'
 import { RequestHandler } from 'express'
 
 import prisma from '../../../config/prisma'
@@ -24,6 +25,7 @@ export const createUser: RequestHandler<{}, {}, CreateUserInput> = async(req, re
             return res.status(409).json("User already exist.")
         }
     } catch(err: any) {
+        // console.log(err)
         return res.status(500).json("Something went wrong")
     }
 
@@ -36,10 +38,25 @@ export const createUser: RequestHandler<{}, {}, CreateUserInput> = async(req, re
 
     try {
         const user = await prisma.user.create({
-            data: { name, email, username, password: hashedPassword }
+            data: { 
+                name, 
+                email, 
+                username, 
+                role: "User", 
+                password: hashedPassword 
+            }
         })
         user.password = "";
-        return res.status(201).json(user)
+        const token = jwt.sign({ 
+            userId: user.id, role: user.role,
+            email: user.email, 
+            username: user.username }, 
+            process.env.JWT_SECRET as string, { expiresIn: "24hr"})
+        if(!token) {
+            return res.status(400).json("Failed to create an account. Try again later")
+        }
+        
+        res.status(201).json({ userData: user, token: token })
     } catch (error) {
         return res.status(500).json("Something went wrong")
     }
@@ -72,7 +89,16 @@ export const LoginUser: RequestHandler<{}, {}, LoginUserInput> = async (req, res
         const isValid = await bcryptjs.compare(password, existingUser?.password as string)
         if(!isValid) return res.status(422).json("Invalid credential entered.");
         existingUser ? existingUser.password = "" : existingUser
-        return res.status(200).json({ user: existingUser })
+        const token = jwt.sign({ 
+            userId: existingUser?.id, role: existingUser?.role,
+            email: existingUser?.email, 
+            username: existingUser?.username }, 
+            process.env.JWT_SECRET as string, { expiresIn: "24hr"})
+        if(!token) {
+            return res.status(400).json("Failed to create an account. Try again later")
+        }
+        
+        res.status(200).json({ user: existingUser, token })
     } catch(err) {
         return res.status(500).json("Something went wrong.")
     }
