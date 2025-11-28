@@ -21,14 +21,15 @@ enum Role {
 }
 
 model User {
-  id        Int         @id  @default(autoincrement())
-  role      Role        @default(User)
-  name      String
-  email     String      @unique
-  username  String      @unique
-  password  String
-  posts     Posts[]
-  products  Products[]  
+  id            Int         @id  @default(autoincrement())
+  role          Role        @default(User)
+  name          String
+  email         String      @unique
+  username      String      @unique
+  password      String
+  posts         Posts[]
+  products      Products[]
+  refreshToken  RefreshToken[]  
 }
 
 model Posts {
@@ -47,3 +48,13 @@ model Products {
   creatorId   Int
   creator     User      @relation(fields: [creatorId], references: [id])
 }
+
+model RefreshToken {
+  deviceId      Int     @id @default(autoincrement())
+  device        String
+  window        String
+  version       String
+  refreshToken  String
+  creatorId     Int
+  creator       User    @relation(fields: [creatorId], references: [id])
+} 
