@@ -3,26 +3,25 @@ import { Request, Response } from 'express'
 
 
 
-export const HashedRefreshToken = async (res: Response, refreshToken: string) => {
+export const HashedRefreshToken = async (refreshToken: string): Promise<string> => {
     try {
         const hashedRefreshedToken = await bcryptjs.hash(refreshToken, 12);
 
-        return { hashedRefreshedToken }
+        return hashedRefreshedToken
     } catch(err) {
-        return res.status(500).json("Something went wrong")
+        return ""
     }
 
 }
 
 
-export const HashedPassword = async (res: Response, password: string) => {
-
+export const HashedPassword = async (password: string): Promise<string> => {
     try {
         const hashedPassword = await bcryptjs.hash(password, 12);
 
-        return { hashedPassword }
+        return hashedPassword
     } catch (error) {
-        return res.status(500).json("Something went wrong")
+        return ""
     }
 }
 
