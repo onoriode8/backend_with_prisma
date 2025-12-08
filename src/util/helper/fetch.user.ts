@@ -19,3 +19,15 @@ export const fetchUserByIdIncludingWhereLogin = async(userId: number): Promise<U
         return null
     }
 }
+
+
+export const updatedUserRefreshToken = async(userId: number, hashedRefreshedToken: string): Promise<void> => {
+    try {
+        await prisma.user.update({
+            where: { id: userId },
+            data: { refreshToken: hashedRefreshedToken }
+        })
+    } catch (error) {
+        throw error
+    }
+}
