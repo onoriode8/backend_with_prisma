@@ -8,11 +8,9 @@ import { CreateUserSchema } from '../schema/auth/create.user.schema'
 import RoleBaseAuthorize from '../middleware/auth/role.base.authorize'
 import { GetAllUserSchema } from '../schema/get.user/get.all.user.schema'
 import Validation from '../middleware/zod.validation/zod.validation.middleware'
-import { createUser, LoginUser } from '../controller/user/auth/auth.user-controller'
+import { createUser, LoginUser, logoutUser } from '../controller/user/auth/auth.user-controller'
 import { GetSingleUserPostSchema } from '../schema/post.schema/get.single.user.post.schema'
-import { queryAllUser, getSingleUser, GetUserDataWhenAccessTokenExpires, 
-    //GetUserDataWhenClientRefresh 
-} from '../controller/user/get.user/get.user-controller'
+import { queryAllUser, getSingleUser, GetUserDataWhenAccessTokenExpires} from '../controller/user/get.user/get.user-controller'
 import { createProduct, queryUserProductById } from '../controller/products/product-controller'
 import { DeleteSingleUserPostSchema } from '../schema/post.schema/delete.single.user.post.schema'
 import { CreatePostBodySchema, CreatePostParamsSchema } from '../schema/post.schema/create.post.schema';
@@ -37,6 +35,7 @@ router.get("/query/:userId", Validation(GetAllUserSchema), AuthMiddleware, expre
 
 router.get("/query/user/:id", Validation(GetUserSchema), AuthMiddleware, expressLimit, getSingleUser); // not added to client request
 
+router.get("/logout/user/:userId", Validation(GetSingleUserPostSchema), logoutUser);
 // POST ROUTES BELOW
 router.post("/create/posts/:userId", Validation(CreatePostParamsSchema), 
     Validation(CreatePostBodySchema), AuthMiddleware, expressLimit, RoleBaseAuthorize(["User"]), createPosts);
