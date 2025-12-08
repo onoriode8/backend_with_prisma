@@ -27,9 +27,10 @@ model User {
   email         String      @unique
   username      String      @unique
   password      String
+  refreshToken  String      @default("")
   posts         Posts[]
   products      Products[]
-  refreshToken  RefreshToken[]  
+  whereLogin    WhereLogin[]  
 }
 
 model Posts {
@@ -49,12 +50,12 @@ model Products {
   creator     User      @relation(fields: [creatorId], references: [id])
 }
 
-model RefreshToken {
-  deviceId      Int     @id @default(autoincrement())
-  device        String
-  window        String
-  version       String
-  refreshToken  String
-  creatorId     Int
-  creator       User    @relation(fields: [creatorId], references: [id])
-} 
+model WhereLogin {
+  deviceId        Int     @id @default(autoincrement())
+  OSVersion       String
+  device          String
+  browser         String
+  browserVersion  String
+  creatorId       Int
+  creator         User    @relation(fields: [creatorId], references: [id])
+}
