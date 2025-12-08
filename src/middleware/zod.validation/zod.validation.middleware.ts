@@ -8,15 +8,12 @@ const validation = (schema: Schema) => {
         try {
             if(schema.body) {
                 const data = await schema.body.parseAsync(req.body)
-                console.log("BODY_VALIDATION", data);
             }
             if(schema.query) {
                 const data = await schema.query.parseAsync(req.query)
-                console.log("QUERY_VALIDATION", data)
             }
             if(schema.params) {
                 const data = await schema.params.parseAsync(req.params)
-                console.log("PARAMS_VALIDATION", data)
             }
             next()
         } catch(err) {
