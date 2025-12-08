@@ -1,4 +1,4 @@
-import { Request } from 'express'
+import { Request, Response } from 'express'
 import { UAParser } from 'ua-parser-js'
 
 interface WhereLoginProps {
@@ -18,14 +18,14 @@ export const ParseDevice = (req: Request) => {
 }
 
 
-export const checkDeviceSecurity = (req: Request, whereLogin: Props) => {
+export const checkDeviceSecurity = (req: Request, res: Response, whereLogin: Props) => {
     const parser = new UAParser(req.headers['user-agent'])
     const result = parser.getResult()
 
-    const device = whereLogin?.filter(d => d.device !== result.device.model && d.OSVersion !== result.os.version);
-    const browser = whereLogin?.filter(d => d.browser !== result.browser.name && d.browserVersion !== result.browser.version);
+    const device = whereLogin?.some(d => d.device === result.device.model && d.OSVersion === result.os.version);
+    const browser = whereLogin?.some(d => d.browser === result.browser.name && d.browserVersion === result.browser.version);
 
-    if(device?.length === 0 || browser?.length === 0) { //security to protect user cookie from unknown device or browser
-        // return res.status(406).json("Not allowed."); // comment back on
+    if(device === false || browser === false) { //security to protect user cookie from unknown device or browser
+        return res.status(406).json("Not allowed."); 
     }
 }
