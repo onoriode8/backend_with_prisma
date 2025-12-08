@@ -90,9 +90,7 @@ export const GetUserDataWhenAccessTokenExpires: RequestHandler<GetSingleUserPost
 
     if(req.cookies.accessToken !== undefined) {
         return await decodedAccessTokenFromCookie(req, res, userParamsId, next);
-    } 
-    
-    // console.log("REACH")
+    }
     
     const userId = decodeRefreshTokenCookie(req, res)
     
@@ -103,11 +101,9 @@ export const GetUserDataWhenAccessTokenExpires: RequestHandler<GetSingleUserPost
             return res.status(404).json("User not found.");
         }
 
-        // console.log("BIG USER", user)
+        // const whereUserLogin = user ? user.whereLogin : []
 
-        // const whereUserLogin = user?.whereLogin 
-
-        // checkDeviceSecurity(req, whereUserLogin);
+        // checkDeviceSecurity(req, res, whereUserLogin);
 
         const refreshToken = user.refreshToken
 
@@ -121,9 +117,9 @@ export const GetUserDataWhenAccessTokenExpires: RequestHandler<GetSingleUserPost
             username: user?.username
         }
         
-        const { accessToken } = SignedAccessToken(userData);
+        const { accessToken } = await SignedAccessToken(userData);
         
-        AccessToken(res, accessToken);
+        await AccessToken(res, accessToken);
 
         res.status(200).json({ message: "OK" });
     } catch(err) {

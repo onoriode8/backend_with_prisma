@@ -1,6 +1,7 @@
 import cors from "cors"
 import helmet from 'helmet'
 import session from 'express-session'
+import compression from 'compression'
 import cookieParser from 'cookie-parser'
 import express, { Request, Response, NextFunction } from 'express'
 
@@ -11,7 +12,7 @@ const app = express()
 
 app.use(express.json())
 app.use(helmet())
-// app.use(compression())
+app.use(compression())
 app.use(cookieParser()) // helped to parsed incoming cookie.
 app.use(cors({
     origin: 'http://localhost:5173', // add frontend url later
@@ -36,7 +37,6 @@ app.use(session({
 app.use("/user", userRoutes);
 
 app.use((error: any, req: Request, res: Response, next: NextFunction) => {
-    console.log("ERROR FROM UNIVERSAL ERROR MIDDLEWARE", error);
     return res.status(400).json("Something went wrong");
 })
 

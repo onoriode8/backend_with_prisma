@@ -28,6 +28,6 @@ export const updatedUserRefreshToken = async(userId: number, hashedRefreshedToke
             data: { refreshToken: hashedRefreshedToken }
         })
     } catch (error) {
-        throw error
+        // throw error
     }
 }

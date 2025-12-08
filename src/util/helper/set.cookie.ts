@@ -6,19 +6,18 @@ export function AccessToken(response: Response, accessToken: string) {
         secure: true,
         httpOnly: true,
         sameSite: "strict",
-        maxAge: 1000 * 60 * 60 * 24 // 1day
+        maxAge: 1000 * 60 * 15 // 15m     //1000 * 60 * 60 * 24 // 1day
     })
 }
 
 
 export function RefreshToken(response: Response, refreshToken: string) {
-
     response.cookie("refreshToken", refreshToken, {
         secure: true,
         httpOnly: true,
         sameSite: "strict",
-        maxAge: 1000 * 60 * 60 * 24 * 7, // 7days
-        path: "/user/get/data/api/access/token/expires"  //"/user/get/data/api/refresh"
+        maxAge: 1000 * 60 * 60 * 24 * 7,
+        path: "/user/get/data/api/access/token/expires"
     })
 }
 
@@ -28,7 +27,7 @@ export const clearUserCookie = (res: Response, value: string, expires: number, p
         secure: true,
         httpOnly: true,
         sameSite: "strict",
-        maxAge: expires, // 7days
-        path: path    //"/user/get/data/api/refresh"
+        maxAge: expires,
+        path: path
     })
 }

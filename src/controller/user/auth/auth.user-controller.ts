@@ -131,7 +131,7 @@ export const LoginUser: RequestHandler<{}, {}, LoginUserInput> = async (req, res
         existingUser ? existingUser.password = "" : existingUser
 
         const whereLogin = existingUser ? existingUser.whereLogin : []
-        console.log("INSIDE CONTROLLER", whereLogin)
+        
         checkDeviceSecurity(req, res, whereLogin);
 
         const user = {
@@ -153,7 +153,7 @@ export const LoginUser: RequestHandler<{}, {}, LoginUserInput> = async (req, res
         RefreshToken(res, refreshToken);
 
         const hashedRefreshedToken = await HashedRefreshToken(refreshToken);
-        console.log("HASHED-REFRESH-TOKEN- INSIDE LOGIN CONTROLLER LINE 151", hashedRefreshedToken)
+
         const userId = existingUser ? existingUser?.id : 0
 
         await updatedUserRefreshToken(userId, hashedRefreshedToken);
@@ -167,15 +167,13 @@ export const LoginUser: RequestHandler<{}, {}, LoginUserInput> = async (req, res
 
 export const logoutUser: RequestHandler<GetSingleUserPostType, {}, {}, {}> = async (req, res) => {
     const userParamsId = Number(req.params.userId);
+    
     const user = await fetchUserByIdIncludingWhereLogin(userParamsId);
     if(!user) {
         return res.status(404).json("User not found.");
     }
 
     await updatedUserRefreshToken(user.id, "");
-    
-    console.log("accessToken", accessTokenValue, accessTokenExpires, accessTokenPath)
-    console.log("refreshToken", refreshTokenValue, refreshTokenExpires, refreshTokenPath);
 
     clearUserCookie(res, accessTokenValue, accessTokenExpires, accessTokenPath)
     clearUserCookie(res, refreshTokenValue, refreshTokenExpires, refreshTokenPath)

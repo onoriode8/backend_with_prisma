@@ -36,6 +36,7 @@ router.get("/query/:userId", Validation(GetAllUserSchema), AuthMiddleware, expre
 router.get("/query/user/:id", Validation(GetUserSchema), AuthMiddleware, expressLimit, getSingleUser); // not added to client request
 
 router.get("/logout/user/:userId", Validation(GetSingleUserPostSchema), logoutUser);
+
 // POST ROUTES BELOW
 router.post("/create/posts/:userId", Validation(CreatePostParamsSchema), 
     Validation(CreatePostBodySchema), AuthMiddleware, expressLimit, RoleBaseAuthorize(["User"]), createPosts);
