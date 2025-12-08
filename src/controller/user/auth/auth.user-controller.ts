@@ -3,14 +3,16 @@ import jwt from 'jsonwebtoken'
 import { RequestHandler } from 'express'
 
 import prisma from '../../../config/prisma'
+import { clearUserCookie } from '../../../util/helper/set.cookie'
 import { CreateUserInput } from '../../../schema/auth/create.user.schema'
 import { LoginUserInput } from '../../../schema/auth/login.user.schema'
 import { AccessToken, RefreshToken } from '../../../util/helper/set.cookie'
 import { ParseDevice, checkDeviceSecurity } from '../../../util/helper/parse.device'
 import { SignedAccessToken, SignedRefreshToken } from '../../../util/helper/jwt_service'
+import { GetSingleUserPostType } from '../../../schema/post.schema/get.single.user.post.schema'
+import { fetchUserByIdIncludingWhereLogin, updatedUserRefreshToken } from '../../../util/helper/fetch.user'
 import { HashedPassword, HashedRefreshToken, compareHashedPassword } from '../../../util/helper/hashed.password'
-
-
+import { accessTokenValue, refreshTokenValue, accessTokenExpires, refreshTokenExpires, accessTokenPath, refreshTokenPath } from '../../../util/helper/cookie.option'
 
 
 // create new users.
@@ -19,7 +21,7 @@ export const createUser: RequestHandler<{}, {}, CreateUserInput> = async(req, re
     const email = req.body.email
     const username = req.body.username
     const password = req.body.password
-
+    
     const { result } = ParseDevice(req);
 
     let existingEmail
@@ -35,29 +37,30 @@ export const createUser: RequestHandler<{}, {}, CreateUserInput> = async(req, re
         return res.status(500).json("Something went wrong")
     }
 
-    const hashedPassword = await HashedPassword(res, password)
+    const hashedPassword = await HashedPassword(password)
 
-    console.log("OMO SEE OH", hashedPassword) // check
+    if(hashedPassword.length === 0) {
+        return res.status(400).json("Failed to create user, Try again later.")
+    }
 
     try {
         const user = await prisma.user.create({
             data: { 
                 name, email, username, 
-                role: "User", password: "" //hashedPassword // check 
+                role: "User", password: hashedPassword
             }
         })
         
         user.password = "";
         const { accessToken } = SignedAccessToken(user)
-        console.log("access", accessToken)
+
         if(!accessToken) {
             return res.status(400).json("Failed to create an account. Try again later")
         }
         const { refreshToken } = SignedRefreshToken(user)
-        console.log("refresh", refreshToken)
 
-        const hashedRefreshedToken = await HashedRefreshToken(res, refreshToken)
-        console.log("HASHED-REFRESH-TOKEN", hashedRefreshedToken)
+        const hashedRefreshedToken = await HashedRefreshToken(refreshToken)
+
         const [ savedDevice, updatedUserRefreshToken ] = await Promise.all([
             prisma.whereLogin.create({
                 data: {
@@ -75,7 +78,7 @@ export const createUser: RequestHandler<{}, {}, CreateUserInput> = async(req, re
             prisma.user.update({
                 where: { id: user.id },
                 data: {
-                    refreshToken: "" //hashedRefreshedToken
+                    refreshToken: hashedRefreshedToken
                 }
             })
         ])
@@ -88,7 +91,7 @@ export const createUser: RequestHandler<{}, {}, CreateUserInput> = async(req, re
         AccessToken(res, accessToken)
         RefreshToken(res, refreshToken)
 
-        res.status(201).json({ userData: user, accessToken })
+        res.status(201).json({ userData: user })
     } catch (error) {
         return res.status(500).json("Something went wrong")
     }
@@ -128,8 +131,8 @@ export const LoginUser: RequestHandler<{}, {}, LoginUserInput> = async (req, res
         existingUser ? existingUser.password = "" : existingUser
 
         const whereLogin = existingUser ? existingUser.whereLogin : []
-
-        checkDeviceSecurity(req, whereLogin);
+        console.log("INSIDE CONTROLLER", whereLogin)
+        checkDeviceSecurity(req, res, whereLogin);
 
         const user = {
             id: existingUser?.id,
@@ -149,16 +152,33 @@ export const LoginUser: RequestHandler<{}, {}, LoginUserInput> = async (req, res
         AccessToken(res, accessToken)
         RefreshToken(res, refreshToken);
 
-        const hashedRefreshedToken = await HashedRefreshToken(res, refreshToken);
+        const hashedRefreshedToken = await HashedRefreshToken(refreshToken);
         console.log("HASHED-REFRESH-TOKEN- INSIDE LOGIN CONTROLLER LINE 151", hashedRefreshedToken)
         const userId = existingUser ? existingUser?.id : 0
-        // await prisma.user.update({
-        //     where: { id: userId },
-        //     data: { refreshToken: hashedRefreshedToken }
-        // })
 
-        res.status(200).json({ user: existingUser, accessToken });
+        await updatedUserRefreshToken(userId, hashedRefreshedToken);
+
+        res.status(200).json({ user: existingUser });
     } catch(err: any) {
         return res.status(500).json("Something went wrong.")
     }
+}
+
+
+export const logoutUser: RequestHandler<GetSingleUserPostType, {}, {}, {}> = async (req, res) => {
+    const userParamsId = Number(req.params.userId);
+    const user = await fetchUserByIdIncludingWhereLogin(userParamsId);
+    if(!user) {
+        return res.status(404).json("User not found.");
+    }
+
+    await updatedUserRefreshToken(user.id, "");
+    
+    console.log("accessToken", accessTokenValue, accessTokenExpires, accessTokenPath)
+    console.log("refreshToken", refreshTokenValue, refreshTokenExpires, refreshTokenPath);
+
+    clearUserCookie(res, accessTokenValue, accessTokenExpires, accessTokenPath)
+    clearUserCookie(res, refreshTokenValue, refreshTokenExpires, refreshTokenPath)
+
+    res.status(200).json("Logout successfully.")
 }
