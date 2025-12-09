@@ -12,7 +12,7 @@ const app = express()
 
 app.use(express.json())
 app.use(helmet())
-app.use(compression())
+// app.use(compression())
 app.use(cookieParser()) // helped to parsed incoming cookie.
 app.use(cors({
     origin: 'http://localhost:5173', // add frontend url later
