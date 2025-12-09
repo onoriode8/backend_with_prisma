@@ -2,6 +2,7 @@ import { RequestHandler } from 'express'
 
 
 import prisma from '../../config/prisma'
+import { fetchUserPostsByUserId } from '../../util/helper/fetch.post'
 import { GetSingleUserPostType } from '../../schema/post.schema/get.single.user.post.schema'
 import { DeleteSingleUserPostType } from '../../schema/post.schema/delete.single.user.post.schema'
 import { CreatePostBodyType, CreatePostParamsType  } from '../../schema/post.schema/create.post.schema'
@@ -49,17 +50,13 @@ export const GetSingleUserPosts: RequestHandler<GetSingleUserPostType, {}, {}, {
     const userParams = req.params.userId;
     const userId = Number(userParams)
 
-    try {
-        const user = await prisma.user.findFirst({ // add pagination on user posts later
-            where: { id: userId },
-            include: { posts: true }
-        })
-        if(!user) return res.status(404).json("User not found")
-        user.password = ""
-        res.status(200).json(user)
-    } catch(err) {
-        return res.status(500).json("Something went wrong.")
-    }
+    const user = await fetchUserPostsByUserId(userId);
+
+    if(!user) return res.status(404).json("User not found");
+
+    user.password = ""
+
+    res.status(200).json(user)
 }
 
 
@@ -74,10 +71,11 @@ export const updateSingleUserPost: RequestHandler<UpdateSingleUserPostParamType,
     const description = req.body.description
 
     try {
-        const user = await prisma.user.findFirst({
+        const user = await prisma.user.findUnique({
             where: { id: userId },
             include: { posts: true }
         })
+
         if(!user) return res.status(404).json("User not found")
             
         const filteredUserPost = user.posts.filter(p => p.id === postId)
@@ -117,7 +115,7 @@ export const deleteSingleUserPost: RequestHandler<DeleteSingleUserPostType, {}, 
     const postId = Number(postParams)
 
     try {
-        const user = await prisma.user.findFirst({
+        const user = await prisma.user.findUnique({
             where: { id: userId },
             include: { posts: true }
         })
