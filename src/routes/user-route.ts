@@ -42,7 +42,7 @@ router.post("/create/posts/:userId", Validation(CreatePostParamsSchema),
     Validation(CreatePostBodySchema), AuthMiddleware, expressLimit, RoleBaseAuthorize(["User"]), createPosts);
 
 router.get("/posts/:userId", 
-    Validation(GetSingleUserPostSchema), AuthMiddleware, expressLimit, RoleBaseAuthorize(["User"]), GetSingleUserPosts);
+    Validation(GetSingleUserPostSchema), AuthMiddleware, RoleBaseAuthorize(["User"]), GetSingleUserPosts);
 
 router.patch("/posts/update/:userId/:postId", Validation(UpdateSingleUserPostParamSchema), 
     Validation(UpdateSingleUserPostBodySchema), AuthMiddleware, expressLimit, RoleBaseAuthorize(["User"]), updateSingleUserPost)
