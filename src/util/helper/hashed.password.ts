@@ -37,14 +37,14 @@ export const compareHashedPassword = async(res: Response, password: string, exis
 }
 
 
-export const comparedHashedRefreshToken = async(req: Request, res: Response, userRefreshToken: string) => {
+export const comparedHashedRefreshToken = async(req: Request, userRefreshToken: string): Promise<boolean> => {
     try {
-        const isValid = await bcryptjs.compare(userRefreshToken, req.cookies.refreshToken);
+        const isValid = await bcryptjs.compare(req.cookies.refreshToken, userRefreshToken);
 
-        if(!isValid) {
-            return res.status(401).json("Unauthorize");
-        }
+        
+        return isValid
+        
     } catch(err) {
-        return res.status(500).json("Something went wrong")
+        return false
     }
 }
