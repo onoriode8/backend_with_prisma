@@ -56,7 +56,6 @@ export const decodeRefreshTokenCookie = (req: Request, res: Response) => {
 
 
 export const decodedAccessTokenFromCookie = async (req: Request, res: Response, userParamsId: string, next: NextFunction) => {
-
     try {
         const decodedToken = jwt.verify(req.cookies.accessToken, process.env.JWT_ACCESS_SECRET as string) as JwtPayload
         if(!decodedToken) {
