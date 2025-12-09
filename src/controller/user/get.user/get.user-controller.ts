@@ -82,8 +82,6 @@ export const GetUserDataWhenAccessTokenExpires: RequestHandler<GetSingleUserPost
         const accessTokenExpires = 1000 * 60 * 60 * 24
         const accessTokenPath = "/"
         clearUserCookie(res, accessTokenValue, accessTokenExpires, accessTokenPath)
-        
-        // console.log("IN")
     
         return res.status(401).json("Not Authenticated");
     }
@@ -107,7 +105,11 @@ export const GetUserDataWhenAccessTokenExpires: RequestHandler<GetSingleUserPost
 
         const refreshToken = user.refreshToken
 
-        await comparedHashedRefreshToken(req, res, refreshToken)
+        const isValid = await comparedHashedRefreshToken(req, refreshToken)
+
+        if(!isValid) {
+            return res.status(401).json("Unauthorize");
+        }
 
         const userData = {
             id: user?.id,
@@ -117,11 +119,11 @@ export const GetUserDataWhenAccessTokenExpires: RequestHandler<GetSingleUserPost
             username: user?.username
         }
         
-        const { accessToken } = await SignedAccessToken(userData);
+        const { accessToken } = SignedAccessToken(userData);
         
-        await AccessToken(res, accessToken);
+        AccessToken(res, accessToken);
 
-        res.status(200).json({ message: "OK" });
+        res.status(200).json({ data: userData, message: "OK" });
     } catch(err) {
         return res.status(500).json("Something went wrong.");
     }
