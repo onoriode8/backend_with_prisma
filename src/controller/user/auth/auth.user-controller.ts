@@ -158,6 +158,8 @@ export const LoginUser: RequestHandler<{}, {}, LoginUserInput> = async (req, res
 
         await updatedUserRefreshToken(userId, hashedRefreshedToken);
 
+        // req.session.userId = userId;
+
         res.status(200).json({ user: existingUser });
     } catch(err: any) {
         return res.status(500).json("Something went wrong.")

@@ -23,26 +23,24 @@ import { UpdateSingleUserPostParamSchema, UpdateSingleUserPostBodySchema } from 
 const router = Router();
 
 
-router.post("/create/account/user", Validation(CreateUserSchema), createUser);
+router.post("/create/account/user", Validation(CreateUserSchema), createUser); //pass
 
-router.post("/login/user", Validation(LoginUserSchema), expressLimit, LoginUser);
+router.post("/login/user", Validation(LoginUserSchema), expressLimit, LoginUser); //pass
 
 router.get("/get/data/api/access/token/expires/:userId", Validation(GetSingleUserPostSchema), GetUserDataWhenAccessTokenExpires);
-
-// router.get("/get/data/api/refresh/page/:userId", Validation(GetSingleUserPostSchema), AuthMiddleware, GetUserDataWhenClientRefresh)
 
 router.get("/query/:userId", Validation(GetAllUserSchema), AuthMiddleware, expressLimit, queryAllUser); // not added to client request
 
 router.get("/query/user/:id", Validation(GetUserSchema), AuthMiddleware, expressLimit, getSingleUser); // not added to client request
 
-router.get("/logout/user/:userId", Validation(GetSingleUserPostSchema), logoutUser);
+router.get("/logout/user/:userId", Validation(GetSingleUserPostSchema), logoutUser); //pass
 
 // POST ROUTES BELOW
 router.post("/create/posts/:userId", Validation(CreatePostParamsSchema), 
-    Validation(CreatePostBodySchema), AuthMiddleware, expressLimit, RoleBaseAuthorize(["User"]), createPosts);
+    Validation(CreatePostBodySchema), AuthMiddleware, expressLimit, RoleBaseAuthorize(["User"]), createPosts); //pass
 
 router.get("/posts/:userId", 
-    Validation(GetSingleUserPostSchema), AuthMiddleware, RoleBaseAuthorize(["User"]), GetSingleUserPosts);
+    Validation(GetSingleUserPostSchema), AuthMiddleware, RoleBaseAuthorize(["User"]), GetSingleUserPosts); //pass
 
 router.patch("/posts/update/:userId/:postId", Validation(UpdateSingleUserPostParamSchema), 
     Validation(UpdateSingleUserPostBodySchema), AuthMiddleware, expressLimit, RoleBaseAuthorize(["User"]), updateSingleUserPost)

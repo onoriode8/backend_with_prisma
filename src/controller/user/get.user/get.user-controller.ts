@@ -8,10 +8,11 @@ import { GetUserInput } from '../../../schema/get.user/get.user.schema'
 import { AccessToken, clearUserCookie } from '../../../util/helper/set.cookie'
 import { GetAllUserType } from '../../../schema/get.user/get.all.user.schema'
 import { comparedHashedRefreshToken } from '../../../util/helper/hashed.password'
-import { fetchUserByIdIncludingWhereLogin } from '../../../util/helper/fetch.user'
 import { ParseDevice, checkDeviceSecurity } from '../../../util/helper/parse.device'
 import { GetSingleUserPostType } from '../../../schema/post.schema/get.single.user.post.schema'
+import { fetchUserByIdIncludingWhereLogin, updatedUserRefreshToken } from '../../../util/helper/fetch.user'
 import { SignedAccessToken, decodedAccessTokenFromCookie, decodeRefreshTokenCookie } from '../../../util/helper/jwt_service'
+import { accessTokenValue, refreshTokenValue, accessTokenExpires, refreshTokenExpires, accessTokenPath, refreshTokenPath } from '../../../util/helper/cookie.option'
 
 
 
@@ -70,17 +71,21 @@ export const GetUserDataWhenAccessTokenExpires: RequestHandler<GetSingleUserPost
     if(req.body !== undefined) {
         return res.status(422).json("Invalid information.");
     }
-
+    // console.log("SESSION", req.session)
     if(req.cookies.refreshToken === undefined) {
-        // use userId or token to clear user refreshToken from the server and db and leave it an empty string, until real user login.
-        const refreshTokenValue = "refreshToken"
-        const refreshTokenExpires = 1000 * 60 * 60 * 24 * 7
-        const refreshTokenPath = "/user/get/data/api/access/token/expires/"
-        clearUserCookie(res, refreshTokenValue, refreshTokenExpires, refreshTokenPath)
+        const userId = Number(userParamsId)
+        const user = await fetchUserByIdIncludingWhereLogin(userId)
+        if(!user) {
+            clearUserCookie(res, accessTokenValue, accessTokenExpires, accessTokenPath)
+            clearUserCookie(res, refreshTokenValue, refreshTokenExpires, refreshTokenPath)
+            
+            return res.status(404).json("User not found.");
+        }
 
-        const accessTokenValue = "accessToken"
-        const accessTokenExpires = 1000 * 60 * 60 * 24
-        const accessTokenPath = "/"
+        const RefreshedToken = ""
+        await updatedUserRefreshToken(userId, RefreshedToken);
+
+        clearUserCookie(res, refreshTokenValue, refreshTokenExpires, refreshTokenPath)
         clearUserCookie(res, accessTokenValue, accessTokenExpires, accessTokenPath)
     
         return res.status(401).json("Not Authenticated");

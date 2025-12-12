@@ -41,5 +41,7 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
-  }
+  },
+  // "include": ["src"]
+  "include": ["src/**/*.ts", "src/types/**/*.d.ts"]
 }

@@ -58,8 +58,6 @@ export const generateAccessTokenWhenAccessTokenExpires: RequestHandler = async (
                 email: user.email, username: user.username }, 
                 process.env.JWT_REFRESH_SECRET as string, { expiresIn: "7d" })
 
-        
-        
         next();
     } catch(err) {
         return res.status(500).json("Something went wrong.")
