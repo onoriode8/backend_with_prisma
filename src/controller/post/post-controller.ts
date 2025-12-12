@@ -125,7 +125,7 @@ export const deleteSingleUserPost: RequestHandler<DeleteSingleUserPostType, {}, 
         if(filteredUserPost.length === 0) {
             return res.status(401).json("Not allowed.")
         }
-        console.log("FILTERED-POST", filteredUserPost)
+        
         const deletedPost = await prisma.posts.delete({
             where: { id: postId }
         })
