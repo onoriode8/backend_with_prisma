@@ -39,7 +39,7 @@ app.use(session({
 app.use("/user", userRoutes);
 
 app.use((req: Request, res: Response, next: NextFunction) => {
-    return res.status({ message: "Invalid page entered." });
+    return res.status(404).json({ message: "Invalid page entered." });
 })
 
 app.use((error: any, req: Request, res: Response, next: NextFunction) => {
