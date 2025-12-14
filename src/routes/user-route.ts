@@ -8,17 +8,16 @@ import { CreateUserSchema } from '../schema/auth/create.user.schema'
 import RoleBaseAuthorize from '../middleware/auth/role.base.authorize'
 import { GetAllUserSchema } from '../schema/get.user/get.all.user.schema'
 import Validation from '../middleware/zod.validation/zod.validation.middleware'
-import { createUser, LoginUser, logoutUser } from '../controller/user/auth/auth.user-controller'
 import { GetSingleUserPostSchema } from '../schema/post.schema/get.single.user.post.schema'
-import { queryAllUser, getSingleUser, GetUserDataWhenAccessTokenExpires} from '../controller/user/get.user/get.user-controller'
 import { createProduct, queryUserProductById } from '../controller/products/product-controller'
+import { createUser, LoginUser, logoutUser } from '../controller/user/auth/auth.user-controller'
 import { DeleteSingleUserPostSchema } from '../schema/post.schema/delete.single.user.post.schema'
 import { CreatePostBodySchema, CreatePostParamsSchema } from '../schema/post.schema/create.post.schema';
 import { CreateProductParamsSchema, CreateProductBodySchema } from '../schema/product/create.product.schema'
+import { queryAllUser, getSingleUser, GetUserDataWhenAccessTokenExpires} from '../controller/user/get.user/get.user-controller'
 import { createPosts, GetSingleUserPosts, updateSingleUserPost, deleteSingleUserPost } from '../controller/post/post-controller';
 import { UpdateSingleUserPostParamSchema, UpdateSingleUserPostBodySchema } from '../schema/post.schema/update.single.user.post.schema'
 
-                  
 
 const router = Router();
 

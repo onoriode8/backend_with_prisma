@@ -38,28 +38,3 @@ export const AuthMiddleware: RequestHandler = async (req, res, next) => {
         return res.status(500).json("Something went wrong.")
     }
 }
-
-export const generateAccessTokenWhenAccessTokenExpires: RequestHandler = async (req, res, next) => {
-
-     try {
-        const decodedToken = jwt.verify(req.cookies.refreshToken, process.env.JWT_REFRESH_SECRET as string) as JwtPayload
-         if(!decodedToken) {
-            return res.status(400).json("Not allowed.")
-        }
-        const user = await prisma.user.findUnique({
-            where: { id: decodedToken.userId }
-        });
-
-        if(!user) {
-            return res.status(401).json("Unauthorize access")
-        }
-
-        const accessToken = jwt.sign({ userId: user.id, role: user.role,
-                email: user.email, username: user.username }, 
-                process.env.JWT_REFRESH_SECRET as string, { expiresIn: "7d" })
-
-        next();
-    } catch(err) {
-        return res.status(500).json("Something went wrong.")
-    }
-}
