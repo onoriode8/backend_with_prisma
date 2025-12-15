@@ -7,7 +7,6 @@ import express, { Request, Response, NextFunction } from 'express'
 
 import userRoutes from './src/routes/user-route'
 
-
 const app = express()
 
 app.use(express.json())
@@ -34,7 +33,6 @@ app.use(session({
         sameSite: "strict",
     }
 }))
-
 
 app.use("/user", userRoutes);
 

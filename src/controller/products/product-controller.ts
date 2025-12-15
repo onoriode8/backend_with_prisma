@@ -52,7 +52,6 @@ export const createProduct: RequestHandler<CreateProductParamsType, {},  CreateP
 
         res.status(200).json(product)
     } catch(err) {
-        console.error(err)
         return res.status(500).json("Something went wrong")
     }
 
