@@ -24,7 +24,7 @@ export const createProduct: RequestHandler<CreateProductParamsType, {},  CreateP
             return res.status(404).json("User not found.")
         }
 
-        const product = await prisma.products.create({
+        const product = await prisma.product.create({
             data: {
                 price, 
                 quantity, 
@@ -75,7 +75,7 @@ export const queryUserProductById: RequestHandler<CreateProductParamsType, {}, {
             return res.status(404).json("User not found.")
         }
 
-        const products = await prisma.products.findMany({
+        const products = await prisma.product.findMany({
             where: { creatorId: user.id },
             include: {
                 creator: {
