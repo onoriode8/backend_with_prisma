@@ -2,6 +2,7 @@ import { RequestHandler } from 'express'
 
 
 import prisma from '../../config/prisma'
+
 import { CreateProductParamsType, CreateProductBodyType } from '../../schema/product/create.product.schema'
 
 
