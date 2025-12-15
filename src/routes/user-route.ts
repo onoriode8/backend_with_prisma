@@ -48,11 +48,11 @@ router.delete("/posts/delete/:userId/:postId",
     Validation(DeleteSingleUserPostSchema), AuthMiddleware, RoleBaseAuthorize(["User"]), deleteSingleUserPost);
 
 //PRODUCT ROUTES BELOW
-router.post("/create/product/:userId", Validation(CreateProductParamsSchema), 
-    Validation(CreateProductBodySchema), AuthMiddleware, expressLimit, RoleBaseAuthorize(["User"]), createProduct); // not added to client
+// router.post("/create/product/:userId", Validation(CreateProductParamsSchema), 
+//     Validation(CreateProductBodySchema), AuthMiddleware, expressLimit, RoleBaseAuthorize(["User"]), createProduct); // not added to client
 
-router.get("/query/user/product/:userId", 
-    Validation(CreatePostParamsSchema), AuthMiddleware, expressLimit, RoleBaseAuthorize(["User"]), queryUserProductById); // not added to client
+// router.get("/query/user/product/:userId", 
+//     Validation(CreatePostParamsSchema), AuthMiddleware, expressLimit, RoleBaseAuthorize(["User"]), queryUserProductById); // not added to client
 
 
 export default router;
