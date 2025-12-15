@@ -21,41 +21,41 @@ enum Role {
 }
 
 model User {
-  id            Int         @id  @default(autoincrement())
-  role          Role        @default(User)
-  name          String
-  email         String      @unique
-  username      String      @unique
-  password      String
-  refreshToken  String      @default("")
-  posts         Posts[]
-  products      Products[]
-  whereLogin    WhereLogin[]  
+  id           Int          @id @default(autoincrement())
+  role         Role         @default(User)
+  name         String
+  email        String       @unique
+  username     String       @unique
+  password     String
+  refreshToken String       @default("")
+  posts        Posts[]
+  products     Products[]
+  whereLogin   WhereLogin[]
 }
 
 model Posts {
-  id          Int       @unique @id   @default(autoincrement())
+  id          Int    @id @unique @default(autoincrement())
   title       String
   creatorId   Int
   description String
-  creator     User      @relation(fields: [creatorId], references: [id])
+  creator     User   @relation(fields: [creatorId], references: [id])
 }
 
 model Products {
-  orderId     Int       @id @default(autoincrement())
+  orderId     Int    @id @default(autoincrement())
   price       Int
   quantity    Int
   productName String
   creatorId   Int
-  creator     User      @relation(fields: [creatorId], references: [id])
+  creator     User   @relation(fields: [creatorId], references: [id])
 }
 
 model WhereLogin {
-  deviceId        Int     @id @default(autoincrement())
-  OSVersion       String
-  device          String
-  browser         String
-  browserVersion  String
-  creatorId       Int
-  creator         User    @relation(fields: [creatorId], references: [id])
+  deviceId       Int    @id @default(autoincrement())
+  OSVersion      String
+  device         String
+  browser        String
+  browserVersion String
+  creatorId      Int
+  creator        User   @relation(fields: [creatorId], references: [id])
 }
